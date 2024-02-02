@@ -1,12 +1,12 @@
-import {DataAccess} from "../DAL/DataAccess";
+import {PostsDataAccess} from "../DAL/DataAccess";
 import {Post, PostData, PostUpdateData} from "../models/Post";
 import {validatePostData, validatePostDataOnCreation} from "../utils/validations";
 import {QueryProps} from "../models/QueryProps";
 
 export class PostsService {
-    private postDataAccess: DataAccess<Post>;
+    private postDataAccess: PostsDataAccess;
 
-    constructor(postDataAccess: DataAccess<Post>) {
+    constructor(postDataAccess: PostsDataAccess) {
         this.postDataAccess = postDataAccess;
     }
 
@@ -17,6 +17,7 @@ export class PostsService {
             throw new Error(`Invalid post data: ${(error as Error).message}`)
         }
         const newPost = new Post(rawPostData.title, rawPostData.content, rawPostData.posted_by, rawPostData.image_url && rawPostData.image_url);
+        console.log(newPost);
         await this.postDataAccess.add(newPost);
     }
 
@@ -45,7 +46,7 @@ export class PostsService {
         }
     }
 
-    async getAllPosts(queryParams: QueryProps): Promise<[{ posts_number: number }, Partial<Post>[]]> {
+    async getAllPosts(queryParams: QueryProps): Promise<{posts_number: number , posts: Partial<Post>[]}> {
         return await this.postDataAccess.getAll(queryParams);
     }
 }

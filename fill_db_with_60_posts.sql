@@ -3,6 +3,13 @@ CREATE DATABASE blog_db;
 -- Connect to the desired database
 \c blog_db;
 
+CREATE TABLE users
+(
+    sub character varying NOT NULL PRIMARY KEY,
+    name character varying NOT NULL,
+    picture character varying
+);
+
 CREATE TABLE post
 (
     id serial NOT NULL PRIMARY KEY,
@@ -10,7 +17,7 @@ CREATE TABLE post
     content character varying NOT NULL,
     image_url character varying,
     creation_date date NOT NULL,
-    posted_by integer NOT NULL
+    posted_by character varying NOT NULL
 );
 
 INSERT INTO post (title, content, image_url, creation_date, posted_by)
@@ -23,8 +30,11 @@ VALUES ('First Post', 'This is my first post!', 'https://images.pexels.com/photo
 INSERT INTO post (title, content, image_url, creation_date, posted_by)
 SELECT CONCAT('Post ', id),
        CONCAT('Content for post ', id),
-       'https://picsum.photos/500/300?random=' || cid,
+       'https://picsum.photos/500/300?random=' || id,
        DATE ('2023-01-' || (MOD(id, 28) + 1)),
-       1
+       '1'
 FROM generate_series(6, 60) AS id;
+
+
+
 

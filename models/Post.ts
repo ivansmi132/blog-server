@@ -1,7 +1,7 @@
 export interface PostData {
     title: string;
     content: string;
-    posted_by: number;
+    posted_by: string;
     image_url?: string;
 }
 
@@ -17,9 +17,9 @@ export class Post {
     public content: string;
     public image_url: string = "";
     public id: number = NaN;
-    public posted_by: number;
+    public posted_by: string;
 
-    constructor(title: string, content: string, posted_by: number,  image_url?: string) {
+    constructor(title: string, content: string, posted_by: string,  image_url?: string) {
         this.title = title;
         this.content = content;
         this.posted_by = posted_by;

@@ -56,8 +56,12 @@ export class PostsController {
 
     async getAllPosts(req: Request, res: Response) {
         const queryParams: QueryProps = req.query;
-        const allBlogPosts = await this.postsService.getAllPosts(queryParams);
-        res.status(200).send(allBlogPosts);
+        try {
+            const allBlogPosts = await this.postsService.getAllPosts(queryParams);
+            res.status(200).send(allBlogPosts);
+        } catch (err) {
+            console.log("Failed to fetch all posts", (err as Error).message);
+        }
     }
 
 }

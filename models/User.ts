@@ -1,8 +1,5 @@
-interface User {
-    sub: string,
+export interface User {
     name: string,
-    give_name: string,
-    family_name: string,
-    picture: string,
-    locale: 'en'
+    sub: string,
+    picture: string
 }

@@ -1,9 +1,21 @@
 import {QueryProps} from "../models/QueryProps";
+import {Post} from "../models/Post";
+import {User} from "../models/User";
 
-export interface DataAccess<T> {
+interface DataAccess<T> {
     add(data: T): Promise<void>,
     delete(id: number): Promise<void>,
     update(id: number, updateData: Partial<T>): Promise<void>,
-    get(id: number): Promise<T>,
-    getAll(queryParams: QueryProps): Promise<[{ posts_number: number }, Partial<T>[]]>,
+    get(id: number | string): Promise<T>,
+
 }
+
+export interface PostsDataAccess extends DataAccess<Post> {
+    getAll(queryParams: QueryProps): Promise<{ posts_number: number, posts: Partial<Post>[] }>
+}
+
+export interface UsersDataAccess extends DataAccess<User> {
+    getAll(): Promise<Array<Partial<User>>>
+}
+
+

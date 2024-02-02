@@ -1,9 +1,9 @@
-import {DataAccess} from "./DataAccess";
+import {PostsDataAccess} from "./DataAccess";
 import {Post, PostUpdateData} from "../models/Post";
 import {getClient} from "../utils/db-connect";
 import {QueryProps} from "../models/QueryProps";
 
-export class PostsDataAccessSQL implements DataAccess<Post> {
+export class PostsDataAccessSQL implements PostsDataAccess {
     private client=  getClient();
 
     async add(newPost: Post): Promise<void> {
@@ -51,7 +51,7 @@ export class PostsDataAccessSQL implements DataAccess<Post> {
         else {throw new Error(`post with ID ${postId} does not exist!`)}
     }
 
-    async getAll(queryParams: QueryProps): Promise<[{ posts_number: number }, Partial<Post>[]]>{
+    async getAll(queryParams: QueryProps): Promise<{ posts_number: number, posts: Partial<Post>[] }> {
         let {page, pageSize, search} = queryParams;
 
         (!page) && (page = "1");
@@ -67,19 +67,19 @@ export class PostsDataAccessSQL implements DataAccess<Post> {
             .then(res => res.rows[0].count);
 
         if (startIndex >= numberOfPosts) {
-            return [{posts_number: numberOfPosts}, []];
+            return {posts_number: numberOfPosts, posts: []}
         }
+
         const fromIndex = startIndex % numberOfPosts;
 
-
-
         const query = {
-            text: `SELECT id, title, image_url FROM post WHERE title LIKE $1 or content LIKE $2 ORDER BY id LIMIT $3 OFFSET $4`,
+            text: `SELECT id, title, image_url, creation_date FROM post WHERE title LIKE $1 or content LIKE $2 ORDER BY id LIMIT $3 OFFSET $4`,
             values: [search, search, pageSize, fromIndex]
         }
         const allPosts = await this.client.query(query);
 
-        return [{posts_number: numberOfPosts}, allPosts.rows];
+
+        return {posts_number: numberOfPosts, posts: allPosts.rows};
     }
 
 }
