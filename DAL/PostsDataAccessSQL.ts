@@ -73,11 +73,10 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         const fromIndex = startIndex % numberOfPosts;
 
         const query = {
-            text: `SELECT id, title, image_url, creation_date FROM post WHERE title LIKE $1 or content LIKE $2 ORDER BY id LIMIT $3 OFFSET $4`,
+            text: `SELECT id, title, image_url, creation_date, posted_by FROM post WHERE title LIKE $1 or content LIKE $2 ORDER BY id LIMIT $3 OFFSET $4`,
             values: [search, search, pageSize, fromIndex]
         }
         const allPosts = await this.client.query(query);
-
 
         return {posts_number: numberOfPosts, posts: allPosts.rows};
     }

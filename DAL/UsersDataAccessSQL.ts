@@ -33,7 +33,11 @@ export class UsersDataAccessSQL implements UsersDataAccess {
     }
 
     async getAll(): Promise<Array<Partial<User>>> {
-        return [{sub: "user"}]
-    }
+        const query = {
+            text: 'SELECT * FROM users'
+        }
+        const result = await this.client.query(query);
 
+        return result.rows
+    }
 }

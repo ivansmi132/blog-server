@@ -2,9 +2,19 @@ import express, {Request, Response} from "express";
 import {PostsController} from "../controllers/PostsController";
 import {PostsService} from "../services/PostsService";
 import {PostsDataAccessSQL} from "../DAL/PostsDataAccessSQL";
+import {UsersService} from "../services/UsersService";
+import {UsersDataAccessSQL} from "../DAL/UsersDataAccessSQL";
 
+// we need access to UsersService to attach the information of the creator of the post based on the id of the user
 export const postsRouter = express.Router();
-const blogPostsController = new PostsController(new PostsService(new PostsDataAccessSQL()));
+const blogPostsController =
+    new PostsController(
+        new PostsService(
+            new PostsDataAccessSQL(),
+            new UsersService(
+                new UsersDataAccessSQL())
+    ));
+
 
 postsRouter.post('/', async (req: Request, res: Response) =>
     await blogPostsController.addPost(req,res));

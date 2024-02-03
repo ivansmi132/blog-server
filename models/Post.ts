@@ -1,3 +1,5 @@
+import {User} from "./User";
+
 export interface PostData {
     title: string;
     content: string;
@@ -18,6 +20,7 @@ export class Post {
     public image_url: string = "";
     public id: number = NaN;
     public posted_by: string;
+    public user?: User;
 
     constructor(title: string, content: string, posted_by: string,  image_url?: string) {
         this.title = title;

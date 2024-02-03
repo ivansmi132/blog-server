@@ -2,12 +2,15 @@ import {PostsDataAccess} from "../DAL/DataAccess";
 import {Post, PostData, PostUpdateData} from "../models/Post";
 import {validatePostData, validatePostDataOnCreation} from "../utils/validations";
 import {QueryProps} from "../models/QueryProps";
+import {UsersService} from "./UsersService";
 
 export class PostsService {
     private postDataAccess: PostsDataAccess;
+    private usersService: UsersService;
 
-    constructor(postDataAccess: PostsDataAccess) {
+    constructor(postDataAccess: PostsDataAccess, usersService: UsersService) {
         this.postDataAccess = postDataAccess;
+        this.usersService = usersService;
     }
 
     async addPost(rawPostData: PostData): Promise<void> {
@@ -47,6 +50,11 @@ export class PostsService {
     }
 
     async getAllPosts(queryParams: QueryProps): Promise<{posts_number: number , posts: Partial<Post>[]}> {
-        return await this.postDataAccess.getAll(queryParams);
+        const retrievedPosts = await this.postDataAccess.getAll(queryParams);
+        const postsWithUserInfo = await Promise.all(retrievedPosts.posts.map(async post => {
+            const userData = await this.usersService.getUser(post.posted_by!);
+            return {...post, user: userData}
+        }))
+        return {posts_number: retrievedPosts.posts_number, posts: postsWithUserInfo};
     }
 }
