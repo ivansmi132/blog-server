@@ -1,6 +1,6 @@
 import express from "express";
 import {postsRouter} from "./routes/postsRouter";
-import {validateJSONMiddleware} from "./middlewares/validateJSONMiddleware";
+import {validateJSON} from "./middlewares/validateJSON";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import {usersRouter} from "./routes/usersRouter";
@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use(validateJSONMiddleware);
+app.use(validateJSON);
 
 app.use("/auth", authRouter);
 app.use('/users', usersRouter);

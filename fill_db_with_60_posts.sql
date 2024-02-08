@@ -7,7 +7,9 @@ CREATE TABLE users
 (
     sub character varying NOT NULL PRIMARY KEY,
     name character varying NOT NULL,
-    picture character varying
+    picture character varying,
+    email character varying,
+    is_admin boolean DEFAULT false
 );
 
 CREATE TABLE post

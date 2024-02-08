@@ -8,8 +8,8 @@ export class UsersDataAccessSQL implements UsersDataAccess {
 
     async add(newUser: GoogleUser): Promise<void> {
         const query = {
-            text: 'INSERT INTO users(sub, name, picture) VALUES ($1, $2, $3)',
-            values: [newUser.sub, newUser.name, newUser.picture]
+            text: 'INSERT INTO users(sub, name, picture, email) VALUES ($1, $2, $3, $4)',
+            values: [newUser.sub, newUser.name, newUser.picture, newUser.email]
         };
         await this.client.query(query);
     }

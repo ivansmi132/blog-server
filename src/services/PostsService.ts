@@ -20,7 +20,7 @@ export class PostsService {
             throw new Error(`Invalid post data: ${(error as Error).message}`)
         }
         const newPost = new Post(rawPostData.title, rawPostData.content, rawPostData.posted_by, rawPostData.image_url && rawPostData.image_url);
-        console.log(newPost);
+        console.log("new post created: ", newPost);
         await this.postDataAccess.add(newPost);
     }
 
