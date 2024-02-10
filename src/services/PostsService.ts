@@ -28,13 +28,12 @@ export class PostsService {
             const blobStream = blob.createWriteStream({});
 
             blobStream.on('error', (error: Error) => {
-                console.error('Blob stream error:', error);
                 reject(new Error(`Upload failed: ${(error as Error).message}`));
             });
 
             blobStream.on("finish", async () => {
                 const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-                console.log(publicUrl);
+                console.log("File uploaded!", publicUrl);
                 resolve(publicUrl);
             });
             blobStream.end(file.buffer);
@@ -45,7 +44,7 @@ export class PostsService {
         return `${uuidv4()}-${existingName}`
     }
 
-    async addPost(rawPostData: PostData, user: User): Promise<void> {
+    async addPost(rawPostData: PostData, user: User): Promise<Post> {
         try {
             validatePostDataBeforeCreation(rawPostData);
         } catch (error) {
@@ -60,7 +59,9 @@ export class PostsService {
 
         console.log("new post created: ", newPost);
 
-        await this.postDataAccess.add(newPost);
+        const post = await this.postDataAccess.add(newPost);
+        post.user = await this.usersService.getUser(post.posted_by!);
+        return post;
     }
 
     async deletePost(postId: number, user: User): Promise<void> {

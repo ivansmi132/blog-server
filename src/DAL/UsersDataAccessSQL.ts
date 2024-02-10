@@ -6,12 +6,13 @@ import {User} from "../models/User";
 export class UsersDataAccessSQL implements UsersDataAccess {
     private client=  getClient();
 
-    async add(newUser: GoogleUser): Promise<void> {
+    async add(newUser: GoogleUser): Promise<User> {
         const query = {
-            text: 'INSERT INTO users(sub, name, picture, email) VALUES ($1, $2, $3, $4)',
+            text: 'INSERT INTO users(sub, name, picture, email) VALUES ($1, $2, $3, $4) RETURNING *',
             values: [newUser.sub, newUser.name, newUser.picture, newUser.email]
         };
-        await this.client.query(query);
+        const result = await this.client.query(query);
+        return result.rows[0];
     }
 
     async delete(userId: number): Promise<void> {

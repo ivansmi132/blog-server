@@ -11,14 +11,13 @@ export class PostsController {
 
     async addPost(req: Request, res: Response): Promise<void> {
         try {
-            if(req.file) {
-                const image_url = await this.postsService.uploadFileToStorage(req.file);
-                const newPost = req.body;
-                newPost.image_url = image_url;
-                await this.postsService.addPost(newPost, req.user!);
-                res.status(201).send("Success");
+            const newPost = req.body;
+            if (req.file) {
+                newPost.image_url = await this.postsService.uploadFileToStorage(req.file);
             }
-        } catch (error) {
+            const createdPost = await this.postsService.addPost(newPost, req.user!);
+            res.status(201).send(createdPost);
+            } catch (error) {
             console.log((error as Error).message);
             res.status(400).send((error as Error).message);
         }
@@ -37,8 +36,10 @@ export class PostsController {
     async updatePost(req: Request, res: Response): Promise<void> {
         const postId = Number(req.params.id);
         const updatedPostData = req.body;
-        console.log(req.body);
         try {
+            if(req.file) {
+                updatedPostData.image_url = await this.postsService.uploadFileToStorage(req.file);
+            }
             await this.postsService.updatePost(postId, updatedPostData, req.user!);
             res.status(200).send({message: `Post ${postId} updated successfully`});
         } catch (error) {

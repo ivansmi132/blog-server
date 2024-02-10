@@ -6,12 +6,13 @@ import {QueryProps} from "../models/QueryProps";
 export class PostsDataAccessSQL implements PostsDataAccess {
     private client=  getClient();
 
-    async add(newPost: Post): Promise<void> {
+    async add(newPost: Post): Promise<Post> {
         const query = {
-            text: 'INSERT INTO post(title, content, image_url, creation_date, posted_by) VALUES ($1, $2, $3, $4, $5)',
+            text: 'INSERT INTO post(title, content, image_url, creation_date, posted_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             values: [newPost.title, newPost.content, newPost.image_url, newPost.creation_date, newPost.posted_by]
         };
-        await this.client.query(query);
+        const result = await this.client.query(query);
+        return result.rows[0];
     }
 
     async delete(postId: number): Promise<void> {
@@ -62,8 +63,8 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         search = '%' + search + '%'
 
         let numberOfPosts = await this.client.query(
-            {text: 'SELECT COUNT(id) from post WHERE title LIKE $1 or content LIKE $2',
-            values: [search, search]})
+            {text: 'SELECT COUNT(id) from post WHERE title ILIKE $1',
+            values: [search]})
             .then(res => res.rows[0].count);
 
         if (startIndex >= numberOfPosts) {
@@ -73,7 +74,7 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         const fromIndex = startIndex % numberOfPosts;
 
         const query = {
-            text: `SELECT id, title, image_url, creation_date, posted_by FROM post WHERE title LIKE $1 ORDER BY id LIMIT $2 OFFSET $3`,
+            text: `SELECT id, title, image_url, creation_date, posted_by FROM post WHERE title ILIKE $1 ORDER BY id LIMIT $2 OFFSET $3`,
             values: [search, pageSize, fromIndex]
         }
         const allPosts = await this.client.query(query);

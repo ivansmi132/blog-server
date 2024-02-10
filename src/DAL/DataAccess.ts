@@ -3,7 +3,7 @@ import {Post} from "../models/Post";
 import {User} from "../models/User";
 
 interface DataAccess<T> {
-    add(data: T): Promise<void>,
+    add(data: T): Promise<T>,
     delete(id: number): Promise<void>,
     update(id: number, updateData: Partial<T>): Promise<void>,
     get(id: number | string): Promise<T>,

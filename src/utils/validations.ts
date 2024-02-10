@@ -20,7 +20,6 @@ export function validatePostData(updatedPostData: PostUpdateData) {
             validatePostContentLength(updatedPostData.content);
             validateStringIsNotWhitespaces(updatedPostData.content);
         }
-        // updatedPostData.image_url && (ValidateImageURL(updatedPostData.image_url));
     } catch (err: any) {
         throw new Error(`Validation failed with error: ${err.message}`)
     }

@@ -29,7 +29,7 @@ postsRouter.delete('/:id', authenticateToken,
     async (req: Request, res: Response) =>
         await blogPostsController.deletePost(req,res));
 
-postsRouter.put('/:id', authenticateToken,
+postsRouter.put('/:id', authenticateToken, parseUploadedImageFile,
     async (req: Request, res: Response) =>
         await blogPostsController.updatePost(req,res));
 

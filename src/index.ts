@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import {usersRouter} from "./routes/usersRouter";
 import {authRouter} from "./routes/authRouter";
+import morgan from "morgan";
 
 const app = express();
 const port = 3001;
@@ -14,6 +15,7 @@ app.use(cors({
     credentials: true
 }))
 
+app.use(morgan('dev'));
 
 app.use(express.json());
 
