@@ -20,4 +20,4 @@ const upload = multer({
     }
 })
 
-export const parseUploadedImage = upload.single('image');
+export const parseUploadedImageFile = upload.single('image');

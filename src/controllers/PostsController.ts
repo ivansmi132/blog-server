@@ -10,11 +10,14 @@ export class PostsController {
     }
 
     async addPost(req: Request, res: Response): Promise<void> {
-        const postData = req.body;
-        console.log("new post:", req.body);
         try {
-            await this.postsService.addPost(postData, req.user!);
-            res.status(201).send({message: `Post created successfully`});
+            if(req.file) {
+                const image_url = await this.postsService.uploadFileToStorage(req.file);
+                const newPost = req.body;
+                newPost.image_url = image_url;
+                await this.postsService.addPost(newPost, req.user!);
+                res.status(201).send("Success");
+            }
         } catch (error) {
             console.log((error as Error).message);
             res.status(400).send((error as Error).message);

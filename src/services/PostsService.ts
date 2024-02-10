@@ -1,9 +1,14 @@
 import {PostsDataAccess} from "../DAL/DataAccess";
 import {Post, PostData, PostUpdateData} from "../models/Post";
-import {validatePostData, validatePostDataOnCreation} from "../utils/validations";
+import {validatePostData, validatePostDataBeforeCreation} from "../utils/validations";
 import {QueryProps} from "../models/QueryProps";
 import {UsersService} from "./UsersService";
 import {User} from "../models/User";
+import {v4 as uuidv4} from "uuid";
+import dotenv from "dotenv";
+import {bucket} from "../utils/cloudStorageBucket";
+
+dotenv.config();
 
 export class PostsService {
     private postDataAccess: PostsDataAccess;
@@ -14,10 +19,35 @@ export class PostsService {
         this.usersService = usersService;
     }
 
+    async uploadFileToStorage(file: Express.Multer.File): Promise<String> {
+        console.log("File found, trying to to upload...");
+        file.originalname = this.createUniqueName(file.originalname);
+        const blob = bucket.file(file.originalname);
+
+        return new Promise((resolve, reject) => {
+            const blobStream = blob.createWriteStream({});
+
+            blobStream.on('error', (error: Error) => {
+                console.error('Blob stream error:', error);
+                reject(new Error(`Upload failed: ${(error as Error).message}`));
+            });
+
+            blobStream.on("finish", async () => {
+                const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+                console.log(publicUrl);
+                resolve(publicUrl);
+            });
+            blobStream.end(file.buffer);
+        })
+    }
+
+    createUniqueName(existingName: string) {
+        return `${uuidv4()}-${existingName}`
+    }
+
     async addPost(rawPostData: PostData, user: User): Promise<void> {
-        console.log("user", user);
         try {
-            validatePostDataOnCreation(rawPostData);
+            validatePostDataBeforeCreation(rawPostData);
         } catch (error) {
             throw new Error(`Invalid post data: ${(error as Error).message}`)
         }

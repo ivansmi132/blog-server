@@ -1,6 +1,6 @@
 import {PostData, PostUpdateData} from "../models/Post";
 
-export function validatePostDataOnCreation(postData: PostData) {
+export function validatePostDataBeforeCreation(postData: PostData) {
     if (!postData.title) {
         throw new Error(`Invalid post data, missing title`);
     }
