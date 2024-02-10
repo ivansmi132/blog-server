@@ -8,10 +8,8 @@ export class AuthController {
         this.authService = authService;
     }
 
-    async authenticateLogin(req: Request, res: Response) {
-        if (req.user) {
-            res.status(200).json(req.user);
-        }
+    authenticateLogin(req: Request, res: Response) {
+       res.status(200).json(req.user);
     }
 
     async authenticateLogout(req: Request, res: Response) {

@@ -56,7 +56,7 @@ export class PostsDataAccessSQL implements PostsDataAccess {
 
         (!page) && (page = "1");
         (!search) && (search = "");
-        (!pageSize) && (pageSize = "10");
+        (!pageSize) && (pageSize = "5");
 
         const startIndex = (Number(page) - 1) * Number(pageSize);
         search = '%' + search + '%'
@@ -73,8 +73,8 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         const fromIndex = startIndex % numberOfPosts;
 
         const query = {
-            text: `SELECT id, title, image_url, creation_date, posted_by FROM post WHERE title LIKE $1 or content LIKE $2 ORDER BY id LIMIT $3 OFFSET $4`,
-            values: [search, search, pageSize, fromIndex]
+            text: `SELECT id, title, image_url, creation_date, posted_by FROM post WHERE title LIKE $1 ORDER BY id LIMIT $2 OFFSET $3`,
+            values: [search, pageSize, fromIndex]
         }
         const allPosts = await this.client.query(query);
 

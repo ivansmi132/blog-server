@@ -11,9 +11,9 @@ export class PostsController {
 
     async addPost(req: Request, res: Response): Promise<void> {
         const postData = req.body;
-        console.log(req.body);
+        console.log("new post:", req.body);
         try {
-            await this.postsService.addPost(postData);
+            await this.postsService.addPost(postData, req.user!);
             res.status(201).send({message: `Post created successfully`});
         } catch (error) {
             console.log((error as Error).message);
@@ -24,7 +24,7 @@ export class PostsController {
     async deletePost(req: Request, res: Response): Promise<void> {
         const postId = Number(req.params.id);
         try {
-            await this.postsService.deletePost(postId);
+            await this.postsService.deletePost(postId, req.user!);
             res.status(200).send({message: `Post ${postId} deleted successfully`});
         } catch (error) {
             res.status(400).send((error as Error).message);
@@ -36,7 +36,7 @@ export class PostsController {
         const updatedPostData = req.body;
         console.log(req.body);
         try {
-            await this.postsService.updatePost(postId, updatedPostData);
+            await this.postsService.updatePost(postId, updatedPostData, req.user!);
             res.status(200).send({message: `Post ${postId} updated successfully`});
         } catch (error) {
             console.log((error as Error).message);

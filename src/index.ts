@@ -14,14 +14,13 @@ app.use(cors({
     credentials: true
 }))
 
+
 app.use(express.json());
 
 app.use(cookieParser());
 
-app.use(validateJSON);
-
-app.use("/auth", authRouter);
-app.use('/users', usersRouter);
+app.use("/auth",validateJSON, authRouter);
+app.use('/users', validateJSON, usersRouter);
 app.use("/posts", postsRouter);
 
 app.listen(port, () => {

@@ -22,30 +22,26 @@ export class AuthService {
         await this.getUserCredentialsFromGoogle(oAuth2Client, code);
         const userInfo = await this.getUserInfoFromGoogle(oAuth2Client.credentials.access_token!);
         console.log(userInfo);
-        // const ticket = await oAuth2Client.verifyIdToken(
-        //     {idToken: oAuth2Client.credentials.id_token!,
-        //         audience: process.env.CLIENT_ID })
-        // console.log("ticket:", ticket);
 
         await this.addUserToDataBase(userInfo);
         const user = await this.usersDataAccess.get(userInfo.sub!);
         return signJWT<User>(user);
     }
 
-    async getUserCredentialsFromGoogle(oAuth2Client: OAuth2Client ,code: string) {
+    private async getUserCredentialsFromGoogle(oAuth2Client: OAuth2Client ,code: string) {
         const response = await oAuth2Client.getToken(code);
         oAuth2Client.setCredentials(response.tokens as Credentials);
     }
 
 
-    async getUserInfoFromGoogle(access_token: string) {
+    private async getUserInfoFromGoogle(access_token: string) {
         const response= await fetch(
             `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
         );
         return await response.json();
     }
 
-    async addUserToDataBase(userInfo: GoogleUser) {
+    private async addUserToDataBase(userInfo: GoogleUser) {
         try {
             await this.usersDataAccess.get(userInfo.sub);
         } catch(error) {
