@@ -7,15 +7,24 @@ export class PostsDataAccessSQL implements PostsDataAccess {
     private client=  getClient();
 
     async add(newPost: Post): Promise<Post> {
+
         const query = {
-            text: 'INSERT INTO post(title, content, image_url, creation_date, posted_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            values: [newPost.title, newPost.content, newPost.image_url, newPost.creation_date, newPost.posted_by]
+            text: 'INSERT INTO post(title, content, image_url, creation_date, posted_by)' +
+                ' VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            values: [
+                newPost.title,
+                newPost.content,
+                newPost.image_url,
+                newPost.creation_date,
+                newPost.posted_by]
         };
+
         const result = await this.client.query(query);
         return result.rows[0];
     }
 
     async delete(postId: number): Promise<void> {
+
         const query = {
             text: 'DELETE FROM post WHERE id = $1',
             values: [postId]
@@ -24,6 +33,7 @@ export class PostsDataAccessSQL implements PostsDataAccess {
     }
 
     async update(postId: number, updatedBlogPostData: PostUpdateData): Promise<void> {
+
         let query = 'UPDATE post SET ';
         const updates: string[] = [];
         const values: (string | number)[] = [];
@@ -43,13 +53,20 @@ export class PostsDataAccessSQL implements PostsDataAccess {
     }
 
     async get(postId: number): Promise<Post> {
+
         const query = {
             text: 'SELECT * FROM post WHERE id = $1',
             values: [postId]
         }
+
         const result = await this.client.query(query);
-        if (result.rows[0]) {return result.rows[0]}
-        else {throw new Error(`post with ID ${postId} does not exist!`)}
+
+        if (result.rows[0]) {
+            return result.rows[0]
+        }
+        else {
+            throw new Error(`post with ID ${postId} does not exist!`)
+        }
     }
 
     async getAll(queryParams: QueryProps): Promise<{ posts_number: number, posts: Partial<Post>[] }> {
@@ -59,27 +76,27 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         (!search) && (search = "");
         (!pageSize) && (pageSize = "5");
 
-        const startIndex = (Number(page) - 1) * Number(pageSize);
+        let initialPostIndex = (Number(page) - 1) * Number(pageSize);
         search = '%' + search + '%'
 
-        let numberOfPosts = await this.client.query(
+        let postsCount = await this.client.query(
             {text: 'SELECT COUNT(id) from post WHERE title ILIKE $1',
             values: [search]})
             .then(res => res.rows[0].count);
 
-        if (startIndex >= numberOfPosts) {
-            return {posts_number: numberOfPosts, posts: []}
+        // if requested page is out of range
+        if (initialPostIndex >= postsCount) {
+            return {posts_number: postsCount, posts: []}
         }
-
-        const fromIndex = startIndex % numberOfPosts;
 
         const query = {
-            text: `SELECT id, title, image_url, creation_date, posted_by FROM post WHERE title ILIKE $1 ORDER BY id LIMIT $2 OFFSET $3`,
-            values: [search, pageSize, fromIndex]
+            text: 'SELECT id, title, image_url, creation_date, posted_by FROM post ' +
+                'WHERE title ILIKE $1 ORDER BY id LIMIT $2 OFFSET $3',
+            values: [search, pageSize, initialPostIndex]
         }
-        const allPosts = await this.client.query(query);
 
-        return {posts_number: numberOfPosts, posts: allPosts.rows};
+        const allPosts = await this.client.query(query);
+        return {posts_number: postsCount, posts: allPosts.rows};
     }
 
 }

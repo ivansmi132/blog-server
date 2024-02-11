@@ -20,15 +20,8 @@ export function validatePostData(updatedPostData: PostUpdateData) {
             validatePostContentLength(updatedPostData.content);
             validateStringIsNotWhitespaces(updatedPostData.content);
         }
-    } catch (err: any) {
-        throw new Error(`Validation failed with error: ${err.message}`)
-    }
-}
-
-export function ValidateImageURL(url: string) {
-    const imageUrlRegex = /^(http|https):\/\/.+\.(jpeg|jpg|gif|png)(\?.+)?$/i;
-    if (!imageUrlRegex.test(url)) {
-        throw new Error("Image URL invalid");
+    } catch (error) {
+        throw new Error(`Validation failed with error: ${(error as Error).message}`)
     }
 }
 
@@ -39,7 +32,7 @@ function validatePostTitleLength(title: string) {
 }
 
 function validatePostContentLength(content: string) {
-    if (content.length < 1 || content.length > 100) {
+    if (content.length < 1) {
         throw new Error("Content length invalid");
     }
 }

@@ -3,6 +3,7 @@ import {User} from "../models/User";
 import {GoogleUser} from "../models/GoogleUser";
 
 export class UsersService {
+
     private userDataAccess: UsersDataAccess;
 
     constructor(userDataAccess: UsersDataAccess) {
@@ -10,10 +11,12 @@ export class UsersService {
     }
 
     async addUser(rawUserData: GoogleUser): Promise<void> {
+
         await this.userDataAccess.add(rawUserData);
     }
 
     async deleteUser(userId: number): Promise<void> {
+
         try {
             await this.userDataAccess.delete(userId);
         } catch (error) {
@@ -22,6 +25,7 @@ export class UsersService {
     }
 
     async updateUser(userId: number, updatedUserData: Partial<User>): Promise<void> {
+
         try {
             await this.userDataAccess.update(userId, updatedUserData);
         } catch (error) {
@@ -30,6 +34,7 @@ export class UsersService {
     }
 
     async getUser(userId: string): Promise<User> {
+
         try {
             return await this.userDataAccess.get(userId);
         } catch (error) {
@@ -38,6 +43,12 @@ export class UsersService {
     }
 
     async getAllUsers() {
-        return await this.userDataAccess.getAll();
+
+        try {
+            return await this.userDataAccess.getAll();
+        } catch (error) {
+            throw new Error(`Unable to get all users: ${(error as Error).message}`)
+        }
+
     }
 }

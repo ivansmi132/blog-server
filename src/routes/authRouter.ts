@@ -15,26 +15,22 @@ const authController =
 authRouter.get('/login', authenticateToken,
     (req: Request, res: Response) => {
         authController.authenticateLogin(req, res);
-    }
-);
+    });
 
 authRouter.get('/logout', authenticateToken,
     async (req: Request, res: Response) => {
         await authController.authenticateLogout(req, res);
-    }
-);
+    });
 
 authRouter.post('/request-google-oauth-screen',
     async (req: Request, res: Response) => {
         await authController.generateGoogleOAuthURL(req, res);
-    }
-);
+    });
 
 authRouter.get('/receive-google-oauth-data',
     async (req: Request, res: Response) => {
         await authController.receiveGoogleOAuthData(req, res);
-    }
-);
+    });
 
 
 

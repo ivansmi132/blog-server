@@ -8,8 +8,8 @@ export interface PostData {
 }
 
 export interface PostUpdateData {
-    title?: string;
-    content?: string;
+    title: string;
+    content: string;
     image_url?: string;
 }
 
@@ -18,8 +18,10 @@ export class Post {
     public title: string;
     public content: string;
     public image_url: string = "";
+    // id is managed serially by the database
     public id: number = NaN;
     public posted_by: string;
+    // user is for attaching the posts creator's data
     public user?: User;
 
     constructor(title: string, content: string, posted_by: string,  image_url?: string) {

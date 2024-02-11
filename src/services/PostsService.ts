@@ -11,6 +11,7 @@ import {bucket} from "../utils/cloudStorageBucket";
 dotenv.config();
 
 export class PostsService {
+
     private postDataAccess: PostsDataAccess;
     private usersService: UsersService;
 
@@ -20,7 +21,7 @@ export class PostsService {
     }
 
     async uploadFileToStorage(file: Express.Multer.File): Promise<String> {
-        console.log("File found, trying to to upload...");
+
         file.originalname = this.createUniqueName(file.originalname);
         const blob = bucket.file(file.originalname);
 
@@ -33,18 +34,18 @@ export class PostsService {
 
             blobStream.on("finish", async () => {
                 const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-                console.log("File uploaded!", publicUrl);
                 resolve(publicUrl);
             });
             blobStream.end(file.buffer);
         })
     }
 
-    createUniqueName(existingName: string) {
+    private createUniqueName(existingName: string) {
         return `${uuidv4()}-${existingName}`
     }
 
     async addPost(rawPostData: PostData, user: User): Promise<Post> {
+
         try {
             validatePostDataBeforeCreation(rawPostData);
         } catch (error) {
@@ -57,17 +58,16 @@ export class PostsService {
             user.sub,
             rawPostData.image_url && rawPostData.image_url);
 
-        console.log("new post created: ", newPost);
-
         const post = await this.postDataAccess.add(newPost);
         post.user = await this.usersService.getUser(post.posted_by!);
         return post;
     }
 
     async deletePost(postId: number, user: User): Promise<void> {
+
         try {
             if (!user.is_admin) {
-                throw new Error("Only admin can delete posts");
+                throw new Error("Only an admin can delete posts");
             }
             await this.postDataAccess.delete(postId);
         } catch (error) {
@@ -76,11 +76,14 @@ export class PostsService {
     }
 
     async updatePost(postId: number, updatedPostData: PostUpdateData, user: User): Promise<void> {
+
         try {
             const post = await this.postDataAccess.get(postId);
+
             if (post.posted_by !== user.sub && !user.is_admin) {
                 throw new Error("Only the creator of the post or an admin can update posts");
             }
+
             validatePostData(updatedPostData);
             await this.postDataAccess.update(postId, updatedPostData);
         } catch (error) {
@@ -89,6 +92,7 @@ export class PostsService {
     }
 
     async getPost(postId: number): Promise<Post> {
+
         try {
             const post =  await this.postDataAccess.get(postId);
             post.user = await this.usersService.getUser(post.posted_by!);
@@ -100,8 +104,9 @@ export class PostsService {
     }
 
     async getAllPosts(queryParams: QueryProps): Promise<{posts_number: number , posts: Partial<Post>[]}> {
+
         const retrievedPosts = await this.postDataAccess.getAll(queryParams);
-        // we attach the post creator's info to each post
+        // for each post we attach its creator's info
         const postsWithUserInfo =
             await Promise.all(
                 retrievedPosts.posts.map(async post => {

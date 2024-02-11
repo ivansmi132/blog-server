@@ -2,8 +2,10 @@
 import {Post, PostUpdateData} from "../models/Post";
 
 export class InMemoryDB {
+
     private static instance: InMemoryDB;
     private blogPosts: Map<number, Post> = new Map();
+
     private constructor() {}
 
     public static getInstance() {
@@ -48,8 +50,3 @@ export class InMemoryDB {
         return allBlogPosts;
     }
 }
-
-const object = {name: "ivan", age: 27};
-const {name, age} = object;
-const name = object.name;
-const age = object.age;

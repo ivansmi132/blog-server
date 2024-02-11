@@ -8,8 +8,10 @@ import {authenticateToken} from "../middlewares/authenticateToken";
 import {parseUploadedImageFile} from "../middlewares/parseUploadedImageFile";
 
 
-
-// we need access to UsersService to attach the information of the creator of the post based on the id of the user
+/*
+We need access to UsersService to attach to retrieved post
+the information of the creator of the post based on the id of the user
+ */
 export const postsRouter = express.Router();
 const blogPostsController =
     new PostsController(

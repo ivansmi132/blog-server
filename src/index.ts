@@ -1,9 +1,7 @@
 import express from "express";
 import {postsRouter} from "./routes/postsRouter";
-import {validateJSON} from "./middlewares/validateJSON";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import {usersRouter} from "./routes/usersRouter";
 import {authRouter} from "./routes/authRouter";
 import morgan from "morgan";
 
@@ -15,14 +13,14 @@ app.use(cors({
     credentials: true
 }))
 
+// Logging middleware
 app.use(morgan('dev'));
 
 app.use(express.json());
 
 app.use(cookieParser());
 
-app.use("/auth",validateJSON, authRouter);
-app.use('/users', validateJSON, usersRouter);
+app.use("/auth", authRouter);
 app.use("/posts", postsRouter);
 
 app.listen(port, () => {

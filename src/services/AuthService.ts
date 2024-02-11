@@ -21,9 +21,8 @@ export class AuthService {
         )
         await this.getUserCredentialsFromGoogle(oAuth2Client, code);
         const userInfo = await this.getUserInfoFromGoogle(oAuth2Client.credentials.access_token!);
-        console.log(userInfo);
 
-        await this.addUserToDataBase(userInfo);
+        await this.addUserToDataBaseOnFirstEverSignIn(userInfo);
         const user = await this.usersDataAccess.get(userInfo.sub!);
         return signJWT<User>(user);
     }
@@ -41,7 +40,8 @@ export class AuthService {
         return await response.json();
     }
 
-    private async addUserToDataBase(userInfo: GoogleUser) {
+    private async addUserToDataBaseOnFirstEverSignIn(userInfo: GoogleUser) {
+
         try {
             await this.usersDataAccess.get(userInfo.sub);
         } catch(error) {
