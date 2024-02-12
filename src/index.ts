@@ -4,9 +4,12 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import {authRouter} from "./routes/authRouter";
 import morgan from "morgan";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.use(cors({
     origin: "http://127.0.0.1:3000",
