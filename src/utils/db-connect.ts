@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const client = new Client({
+    ssl: true,
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
