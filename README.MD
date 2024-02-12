@@ -1,8 +1,27 @@
-# Blog Project backend part !
-## Supported functionality:
-### "/posts" HTTP API: 
-* get request "/posts" -> retrieve all posts
-* get request "/posts/:#" -> retrieve post with id #
-* post request "/posts" -> add new post, request body should contain both title and content {title, content}
-* put request "/posts/:#" -> update post with id #, request body should contain either title, content or both {title?, content?}
-* delete request "/posts/:#" -> delete post with id #
+# Blog Project Express.js Server
+
+### .env file :
+DB_USER=postgres \
+DB_HOST=localhost \
+DB_NAME=blog_db \
+DB_PASSWORD=12345 \
+DB_PORT=5432 \
+CLIENT_ID= \
+CLIENT_SECRET= \
+GOOOLE_AUTH_REDIRECT_URL= \
+JWT_SECRET= \
+PROJECT_ID= \
+IMAGE_BUCKET= \
+KEY_FILEPATH=
+
+### Utilized Libraries:
+* cookie-parser
+* cors
+* dotenv
+* express
+* google-auth-library
+* jsonwebtoken
+* morgan
+* multer
+* pg
+* uuid

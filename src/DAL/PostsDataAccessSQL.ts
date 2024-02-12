@@ -69,34 +69,53 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         }
     }
 
+    /*
+    It's a (fully functional) mess, I will refactor it asap :)
+     */
     async getAll(queryParams: QueryProps): Promise<{ posts_number: number, posts: Partial<Post>[] }> {
-        let {page, pageSize, search} = queryParams;
+        let { page, pageSize, search, type } = queryParams;
 
-        (!page) && (page = "1");
-        (!search) && (search = "");
-        (!pageSize) && (pageSize = "5");
+        page = page || "1";
+        search = search ? '%' + search + '%' : "%";
+        pageSize = pageSize || "5";
+        type = type || "title";
 
         let initialPostIndex = (Number(page) - 1) * Number(pageSize);
-        search = '%' + search + '%'
 
-        let postsCount = await this.client.query(
-            {text: 'SELECT COUNT(id) from post WHERE title ILIKE $1',
-            values: [search]})
-            .then(res => res.rows[0].count);
+        // Adjust the count query based on the type
+        let countQueryText = 'SELECT COUNT(p.id) FROM post p';
+        if (type === "user") {
+            countQueryText += ' INNER JOIN users u ON p.posted_by = u.sub WHERE u.name ILIKE $1';
+        } else { // Default to title search
+            countQueryText += ' WHERE p.title ILIKE $1';
+        }
+
+        let postsCount = await this.client.query({
+            text: countQueryText,
+            values: [search]
+        }).then(res => parseInt(res.rows[0].count, 10));
 
         // if requested page is out of range
         if (initialPostIndex >= postsCount) {
-            return {posts_number: postsCount, posts: []}
+            return { posts_number: postsCount, posts: [] };
         }
 
-        const query = {
-            text: 'SELECT id, title, image_url, creation_date, posted_by FROM post ' +
-                'WHERE title ILIKE $1 ORDER BY id LIMIT $2 OFFSET $3',
+        // Adjust the main query based on the type
+        let queryText = 'SELECT p.id, p.title, p.image_url, p.creation_date, p.posted_by FROM post p';
+        if (type === "user") {
+            queryText += ' INNER JOIN users u ON p.posted_by = u.sub WHERE u.name ILIKE $1';
+        } else { // Default to title search
+            queryText += ' WHERE p.title ILIKE $1';
+        }
+        queryText += ' ORDER BY p.id LIMIT $2 OFFSET $3';
+
+        const allPosts = await this.client.query({
+            text: queryText,
             values: [search, pageSize, initialPostIndex]
-        }
+        });
 
-        const allPosts = await this.client.query(query);
-        return {posts_number: postsCount, posts: allPosts.rows};
+        return { posts_number: postsCount, posts: allPosts.rows };
     }
+
 
 }
