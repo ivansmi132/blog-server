@@ -1,5 +1,7 @@
 import {AuthService} from "../services/AuthService";
 import {Request, Response} from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 export class AuthController {
 
@@ -43,7 +45,7 @@ export class AuthController {
                 maxAge: 3600000, // 1 hour
             });
 
-            res.redirect(302, 'http://127.0.0.1:3000');
+            res.redirect(302, process.env.REACT_URL!);
         } catch (err) {
             res.status(400).send(`Error with signing in with Google, ${(err as Error).message}`);
         }
