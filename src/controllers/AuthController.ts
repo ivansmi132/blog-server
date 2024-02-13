@@ -16,7 +16,13 @@ export class AuthController {
     }
 
     async authenticateLogout(req: Request, res: Response) {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            httpOnly: true,
+            path: "/",
+            secure: true,
+            sameSite: "none"
+
+        });
         res.status(200).send("Logged out!");
     }
 
