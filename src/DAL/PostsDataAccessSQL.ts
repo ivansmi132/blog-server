@@ -107,7 +107,13 @@ export class PostsDataAccessSQL implements PostsDataAccess {
         } else { // Default to title search
             queryText += ' WHERE p.title ILIKE $1';
         }
-        queryText += ' ORDER BY p.id LIMIT $2 OFFSET $3';
+
+        if (type === "latest") {
+            queryText += ' ORDER BY p.creation_date DESC LIMIT $2 OFFSET $3';
+        } else {
+            queryText += ' ORDER BY p.id LIMIT $2 OFFSET $3';
+        }
+
 
         const allPosts = await this.client.query({
             text: queryText,
